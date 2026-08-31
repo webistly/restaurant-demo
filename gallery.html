@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gallery | Ember & Spice</title>
+    <meta name="description" content="Explore the visual story of Ember & Spice through our curated restaurant gallery.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --cream-bg: #FFFDF8;
+            --cream-section: #F8F3EA;
+            --white: #FFFFFF;
+            --dark-text: #241F1A;
+            --secondary-text: #6F665D;
+            --gold-accent: #B88945;
+            --soft-border: #E8DED0;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --shadow: 0 10px 30px rgba(80, 55, 30, 0.08);
+            --shadow-hover: 0 20px 50px rgba(80, 55, 30, 0.15);
+            --radius: 12px;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-sans); background: var(--cream-bg); color: var(--dark-text); line-height: 1.7; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 30px; }
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            display: inline-block; background: var(--gold-accent); color: var(--white);
+            font-weight: 600; font-size: 0.95rem; letter-spacing: 0.04em; padding: 14px 38px;
+            border: none; border-radius: 50px; cursor: pointer; transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(184, 137, 69, 0.3); text-transform: uppercase;
+        }
+        .btn-primary:hover { background: #a0753a; transform: translateY(-3px); box-shadow: 0 12px 28px rgba(184, 137, 69, 0.4); }
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            padding: 14px 40px; display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s ease; background: rgba(255, 253, 248, 0.92);
+            backdrop-filter: blur(12px); border-bottom: 1px solid rgba(232, 222, 208, 0.3);
+        }
+        .navbar.scrolled { background: rgba(255, 253, 248, 0.97); box-shadow: 0 4px 30px rgba(80, 55, 30, 0.06); padding: 10px 40px; }
+        .logo { font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; letter-spacing: 0.06em; color: var(--dark-text); }
+        .logo span { color: var(--gold-accent); }
+        .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+        .nav-links a { font-size: 0.9rem; font-weight: 500; letter-spacing: 0.04em; color: var(--secondary-text); transition: var(--transition); position: relative; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 0; height: 2px; background: var(--gold-accent); transition: var(--transition); }
+        .nav-links a:hover, .nav-links a.active { color: var(--dark-text); }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-cta { background: var(--gold-accent); color: var(--white) !important; padding: 10px 24px; border-radius: 50px; font-weight: 600; transition: var(--transition); }
+        .nav-cta:hover { background: #a0753a; transform: translateY(-2px); color: var(--white) !important; }
+        .nav-cta::after { display: none !important; }
+        .hamburger { display: none; flex-direction: column; gap: 6px; background: none; border: none; cursor: pointer; padding: 6px; }
+        .hamburger span { display: block; width: 28px; height: 2.5px; background: var(--dark-text); border-radius: 4px; transition: var(--transition); }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+        /* ===== HERO ===== */
+        .gallery-hero {
+            height: 40vh; min-height: 300px;
+            background: linear-gradient(135deg, rgba(255, 250, 240, 0.82), rgba(255, 250, 240, 0.55)), url('pic14.png') center/cover no-repeat;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            padding-top: 80px;
+        }
+        .gallery-hero h1 { font-family: var(--font-serif); font-size: clamp(2.6rem, 6vw, 4.2rem); font-weight: 700; color: var(--dark-text); }
+
+        /* ===== GALLERY GRID ===== */
+        .gallery-grid {
+            padding: 80px 0;
+            background: var(--cream-bg);
+        }
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            grid-auto-rows: 220px;
+            gap: 16px;
+        }
+        .grid-item {
+            overflow: hidden;
+            border-radius: var(--radius);
+            cursor: pointer;
+            position: relative;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--soft-border);
+            transition: var(--transition);
+        }
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: var(--transition);
+        }
+        .grid-item:hover img {
+            transform: scale(1.06);
+        }
+        .grid-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+        .grid-item:nth-child(2) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(3) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(4) { grid-column: span 2; grid-row: span 1; }
+        .grid-item:nth-child(5) { grid-column: span 1; grid-row: span 2; }
+        .grid-item:nth-child(6) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(7) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(8) { grid-column: span 2; grid-row: span 1; }
+        .grid-item:nth-child(9) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(10) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(11) { grid-column: span 2; grid-row: span 2; }
+        .grid-item:nth-child(12) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(13) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(14) { grid-column: span 1; grid-row: span 1; }
+        .grid-item:nth-child(15) { grid-column: span 1; grid-row: span 1; }
+
+        /* ===== LIGHTBOX ===== */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.92);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+            padding: 40px;
+        }
+        .lightbox.open { display: flex; }
+        .lightbox-content {
+            max-width: 80%;
+            max-height: 80%;
+            position: relative;
+        }
+        .lightbox-content img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 6px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.8);
+        }
+        .lightbox-close {
+            position: absolute;
+            top: -50px;
+            right: 0;
+            font-size: 2.4rem;
+            background: none;
+            border: none;
+            color: var(--white);
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .lightbox-close:hover { color: var(--gold-accent); }
+        .lightbox-nav {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 2.4rem;
+            background: none;
+            border: none;
+            color: rgba(255,255,255,0.7);
+            cursor: pointer;
+            transition: var(--transition);
+            padding: 12px;
+        }
+        .lightbox-nav:hover { color: var(--white); }
+        .lightbox-prev { left: -60px; }
+        .lightbox-next { right: -60px; }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--cream-section);
+            padding: 70px 0 30px;
+            border-top: 1px solid var(--soft-border);
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 50px;
+        }
+        .footer h4 { font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 16px; color: var(--dark-text); }
+        .footer p, .footer a { color: var(--secondary-text); font-size: 0.95rem; line-height: 2; }
+        .footer a:hover { color: var(--gold-accent); }
+        .footer-socials { display: flex; gap: 16px; margin-top: 12px; }
+        .footer-socials a { font-size: 1.3rem; color: var(--secondary-text); transition: var(--transition); }
+        .footer-socials a:hover { color: var(--gold-accent); }
+        .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid var(--soft-border); color: var(--secondary-text); font-size: 0.9rem; }
+        .footer .logo { font-size: 1.8rem; margin-bottom: 10px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 992px) {
+            .grid-container { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 180px; }
+            .grid-item:nth-child(1) { grid-column: span 2; grid-row: span 2; }
+            .grid-item:nth-child(2) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(3) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(4) { grid-column: span 2; grid-row: span 1; }
+            .grid-item:nth-child(5) { grid-column: span 1; grid-row: span 2; }
+            .grid-item:nth-child(6) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(7) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(8) { grid-column: span 2; grid-row: span 1; }
+            .grid-item:nth-child(9) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(10) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(11) { grid-column: span 2; grid-row: span 2; }
+            .grid-item:nth-child(12) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(13) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(14) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(15) { grid-column: span 1; grid-row: span 1; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .navbar { padding: 12px 20px; }
+            .nav-links {
+                position: fixed; top: 0; right: -100%; width: 70%; max-width: 300px; height: 100vh;
+                background: var(--white); flex-direction: column; justify-content: center; align-items: center;
+                gap: 24px; transition: var(--transition); padding: 40px 20px; box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+            }
+            .nav-links.open { right: 0; }
+            .hamburger { display: flex; z-index: 1001; }
+            .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+            .grid-container { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 160px; gap: 10px; }
+            .grid-item:nth-child(1) { grid-column: span 2; grid-row: span 1; }
+            .grid-item:nth-child(4) { grid-column: span 2; grid-row: span 1; }
+            .grid-item:nth-child(5) { grid-column: span 1; grid-row: span 1; }
+            .grid-item:nth-child(8) { grid-column: span 2; grid-row: span 1; }
+            .grid-item:nth-child(11) { grid-column: span 2; grid-row: span 1; }
+            .lightbox-content { max-width: 95%; }
+            .lightbox-prev { left: 6px; }
+            .lightbox-next { right: 6px; }
+            .lightbox-nav { font-size: 1.8rem; }
+        }
+        @media (max-width: 480px) {
+            .container { padding: 0 16px; }
+            .navbar { padding: 10px 16px; }
+            .logo { font-size: 1.4rem; }
+            .grid-container { grid-template-columns: 1fr 1fr; grid-auto-rows: 140px; gap: 8px; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+        .back-top {
+            position: fixed; bottom: 30px; right: 30px; background: var(--gold-accent); color: var(--white);
+            width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; box-shadow: 0 6px 20px rgba(0,0,0,0.1); opacity: 0; visibility: hidden;
+            transition: var(--transition); z-index: 999; border: none; cursor: pointer;
+        }
+        .back-top.visible { opacity: 1; visibility: visible; }
+        .back-top:hover { background: #a0753a; transform: translateY(-4px); }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <header>
+        <nav class="navbar" id="navbar">
+            <div class="logo">EMBER <span>&</span> SPICE</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="gallery.html" class="active">Gallery</a></li>
+                <li><a href="contact.html" class="nav-cta">Reserve a Table</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="gallery-hero">
+        <h1>Gallery</h1>
+    </section>
+
+    <!-- ===== GALLERY ===== -->
+    <section class="gallery-grid">
+        <div class="container grid-container">
+            <div class="grid-item"><img src="pic1.png" alt="Restaurant interior" data-index="0"></div>
+            <div class="grid-item"><img src="pic2.png" alt="Dining table" data-index="1"></div>
+            <div class="grid-item"><img src="pic3.png" alt="Steak dish" data-index="2"></div>
+            <div class="grid-item"><img src="pic4.png" alt="Pasta dish" data-index="3"></div>
+            <div class="grid-item"><img src="pic5.png" alt="Restaurant ambiance" data-index="4"></div>
+            <div class="grid-item"><img src="pic6.png" alt="Salmon dish" data-index="5"></div>
+            <div class="grid-item"><img src="pic7.png" alt="Restaurant exterior" data-index="6"></div>
+            <div class="grid-item"><img src="pic8.png" alt="Dessert" data-index="7"></div>
+            <div class="grid-item"><img src="pic9.png" alt="Bar area" data-index="8"></div>
+            <div class="grid-item"><img src="pic10.png" alt="Chef at work" data-index="9"></div>
+            <div class="grid-item"><img src="pic11.png" alt="Dining room" data-index="10"></div>
+            <div class="grid-item"><img src="pic12.png" alt="Chef plating" data-index="11"></div>
+            <div class="grid-item"><img src="pic13.png" alt="Restaurant details" data-index="12"></div>
+            <div class="grid-item"><img src="pic14.png" alt="Cocktail" data-index="13"></div>
+            <div class="grid-item"><img src="pic15.png" alt="Restaurant interior 2" data-index="14"></div>
+        </div>
+    </section>
+
+    <!-- ===== LIGHTBOX ===== -->
+    <div class="lightbox" id="lightbox">
+        <div class="lightbox-content">
+            <button class="lightbox-close" id="lightboxClose"><i class="fas fa-times"></i></button>
+            <button class="lightbox-nav lightbox-prev" id="lightboxPrev"><i class="fas fa-chevron-left"></i></button>
+            <img src="" alt="Gallery lightbox" id="lightboxImage">
+            <button class="lightbox-nav lightbox-next" id="lightboxNext"><i class="fas fa-chevron-right"></i></button>
+        </div>
+    </div>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="logo">EMBER <span>&</span> SPICE</div>
+                    <p style="margin-top: 10px;">Where flavor meets fire – a modern restaurant experience crafted with passion and warmth.</p>
+                    <div class="footer-socials">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-yelp"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <a href="index.html">Home</a><br>
+                    <a href="menu.html">Menu</a><br>
+                    <a href="about.html">About</a><br>
+                    <a href="gallery.html">Gallery</a><br>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div>
+                    <h4>Opening Hours</h4>
+                    <p>Mon – Thu: 11:00 AM – 10:00 PM</p>
+                    <p>Fri – Sat: 11:00 AM – 11:30 PM</p>
+                    <p>Sun: 12:00 PM – 9:00 PM</p>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-phone" style="width:20px;"></i> +1 (555) 246-8019</p>
+                    <p><i class="fas fa-envelope" style="width:20px;"></i> hello@emberandspice.com</p>
+                    <p><i class="fas fa-map-marker-alt" style="width:20px;"></i> 125 Maple Street, Downtown, New York, NY</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Ember & Spice. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-top" id="backTop"><i class="fas fa-arrow-up"></i></button>
+
+    <script>
+        // ===== NAVBAR =====
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            navLinks.classList.toggle('open');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('open');
+                navLinks.classList.remove('open');
+            });
+        });
+        const backTop = document.getElementById('backTop');
+        window.addEventListener('scroll', () => backTop.classList.toggle('visible', window.scrollY > 500));
+        backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // ===== LIGHTBOX =====
+        const images = document.querySelectorAll('.grid-item img');
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightboxImage');
+        const closeBtn = document.getElementById('lightboxClose');
+        const prevBtn = document.getElementById('lightboxPrev');
+        const nextBtn = document.getElementById('lightboxNext');
+        let currentIndex = 0;
+
+        function openLightbox(index) {
+            currentIndex = index;
+            lightboxImg.src = images[index].src;
+            lightbox.classList.add('open');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeLightbox() {
+            lightbox.classList.remove('open');
+            document.body.style.overflow = '';
+        }
+
+        function changeImage(direction) {
+            currentIndex = (currentIndex + direction + images.length) % images.length;
+            lightboxImg.src = images[currentIndex].src;
+        }
+
+        images.forEach((img, i) => {
+            img.addEventListener('click', () => openLightbox(i));
+        });
+
+        closeBtn.addEventListener('click', closeLightbox);
+        prevBtn.addEventListener('click', () => changeImage(-1));
+        nextBtn.addEventListener('click', () => changeImage(1));
+
+        document.addEventListener('keydown', (e) => {
+            if (!lightbox.classList.contains('open')) return;
+            if (e.key === 'Escape') closeLightbox();
+            if (e.key === 'ArrowLeft') changeImage(-1);
+            if (e.key === 'ArrowRight') changeImage(1);
+        });
+
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) closeLightbox();
+        });
+    </script>
+</body>
+</html>

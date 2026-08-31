@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menu | Ember & Spice</title>
+    <meta name="description" content="Explore our crafted menu featuring noodles, momos, finger food, pasta, pizza, burgers, desserts and drinks at Ember & Spice.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        /* ===== RESET & VARIABLES ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --cream-bg: #FFFDF8;
+            --cream-section: #F8F3EA;
+            --white: #FFFFFF;
+            --dark-text: #241F1A;
+            --secondary-text: #6F665D;
+            --gold-accent: #B88945;
+            --soft-border: #E8DED0;
+            --font-serif: 'Playfair Display', serif;
+            --font-sans: 'Inter', sans-serif;
+            --shadow: 0 10px 30px rgba(80, 55, 30, 0.08);
+            --shadow-hover: 0 20px 50px rgba(80, 55, 30, 0.15);
+            --radius: 12px;
+            --transition: 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        html { scroll-behavior: smooth; }
+        body { font-family: var(--font-sans); background: var(--cream-bg); color: var(--dark-text); line-height: 1.7; overflow-x: hidden; }
+        a { text-decoration: none; color: inherit; }
+        img { display: block; max-width: 100%; }
+        .container { max-width: 1240px; margin: 0 auto; padding: 0 30px; }
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            display: inline-block; background: var(--gold-accent); color: var(--white);
+            font-weight: 600; font-size: 0.95rem; letter-spacing: 0.04em; padding: 14px 38px;
+            border: none; border-radius: 50px; cursor: pointer; transition: var(--transition);
+            box-shadow: 0 4px 16px rgba(184, 137, 69, 0.3); text-transform: uppercase;
+        }
+        .btn-primary:hover { background: #a0753a; transform: translateY(-3px); box-shadow: 0 12px 28px rgba(184, 137, 69, 0.4); }
+        .btn-secondary {
+            display: inline-block; background: transparent; color: var(--dark-text);
+            font-weight: 600; font-size: 0.95rem; letter-spacing: 0.04em; padding: 14px 38px;
+            border: 2px solid var(--gold-accent); border-radius: 50px; cursor: pointer; transition: var(--transition);
+            text-transform: uppercase;
+        }
+        .btn-secondary:hover { background: var(--gold-accent); color: var(--white); transform: translateY(-3px); }
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 1000;
+            padding: 14px 40px; display: flex; align-items: center; justify-content: space-between;
+            transition: all 0.3s ease; background: rgba(255, 253, 248, 0.92);
+            backdrop-filter: blur(12px); border-bottom: 1px solid rgba(232, 222, 208, 0.3);
+        }
+        .navbar.scrolled { background: rgba(255, 253, 248, 0.97); box-shadow: 0 4px 30px rgba(80, 55, 30, 0.06); padding: 10px 40px; }
+        .logo { font-family: var(--font-serif); font-size: 1.8rem; font-weight: 700; letter-spacing: 0.06em; color: var(--dark-text); }
+        .logo span { color: var(--gold-accent); }
+        .nav-links { display: flex; align-items: center; gap: 32px; list-style: none; }
+        .nav-links a { font-size: 0.9rem; font-weight: 500; letter-spacing: 0.04em; color: var(--secondary-text); transition: var(--transition); position: relative; }
+        .nav-links a::after { content: ''; position: absolute; bottom: -6px; left: 0; width: 0; height: 2px; background: var(--gold-accent); transition: var(--transition); }
+        .nav-links a:hover, .nav-links a.active { color: var(--dark-text); }
+        .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+        .nav-cta { background: var(--gold-accent); color: var(--white) !important; padding: 10px 24px; border-radius: 50px; font-weight: 600; transition: var(--transition); }
+        .nav-cta:hover { background: #a0753a; transform: translateY(-2px); color: var(--white) !important; }
+        .nav-cta::after { display: none !important; }
+        .hamburger { display: none; flex-direction: column; gap: 6px; background: none; border: none; cursor: pointer; padding: 6px; }
+        .hamburger span { display: block; width: 28px; height: 2.5px; background: var(--dark-text); border-radius: 4px; transition: var(--transition); }
+        .hamburger.open span:nth-child(1) { transform: rotate(45deg) translate(6px, 6px); }
+        .hamburger.open span:nth-child(2) { opacity: 0; }
+        .hamburger.open span:nth-child(3) { transform: rotate(-45deg) translate(6px, -6px); }
+
+        /* ===== HERO ===== */
+        .menu-hero {
+            height: 45vh; min-height: 340px;
+            background: linear-gradient(135deg, rgba(255, 250, 240, 0.82), rgba(255, 250, 240, 0.55)), url('pic9.png') center/cover no-repeat;
+            display: flex; align-items: center; justify-content: center; text-align: center;
+            padding-top: 80px;
+            flex-direction: column;
+        }
+        .menu-hero h1 { font-family: var(--font-serif); font-size: clamp(2.6rem, 6vw, 4.2rem); font-weight: 700; margin-bottom: 10px; color: var(--dark-text); }
+        .menu-hero p { font-size: 1.15rem; color: var(--secondary-text); max-width: 520px; margin: 0 auto; }
+
+        /* ===== MENU CATEGORY ===== */
+        .menu-category { padding: 60px 0 40px; }
+        .menu-category:last-of-type { padding-bottom: 80px; }
+        .menu-category .cat-heading {
+            font-family: var(--font-serif); font-size: 2rem; font-weight: 600;
+            border-bottom: 2px solid var(--gold-accent); padding-bottom: 10px; margin-bottom: 32px;
+            display: inline-block;
+            letter-spacing: 0.02em;
+            color: var(--dark-text);
+        }
+        .menu-category .cat-heading i { margin-right: 14px; color: var(--gold-accent); }
+
+        /* ===== MENU GRID ===== */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 28px;
+        }
+
+        /* ===== MENU CARD ===== */
+        .menu-card {
+            background: var(--white);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            border: 1px solid var(--soft-border);
+            display: flex;
+            flex-direction: column;
+        }
+        .menu-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-hover);
+        }
+        .menu-card .card-img {
+            width: 100%;
+            height: 190px;
+            object-fit: cover;
+            transition: var(--transition);
+            display: block;
+        }
+        .menu-card:hover .card-img {
+            transform: scale(1.04);
+        }
+        .menu-card .card-body {
+            padding: 16px 18px 20px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .menu-card .card-body .item-name {
+            font-family: var(--font-serif);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 4px;
+            line-height: 1.3;
+            color: var(--dark-text);
+        }
+        .menu-card .card-body .item-price {
+            color: var(--gold-accent);
+            font-weight: 700;
+            font-size: 1.15rem;
+            margin-top: auto;
+            padding-top: 8px;
+        }
+        .menu-card .card-body .item-desc {
+            color: var(--secondary-text);
+            font-size: 0.85rem;
+            margin: 4px 0 8px;
+            line-height: 1.4;
+            flex: 1;
+        }
+
+        /* ===== FOOTER ===== */
+        .footer {
+            background: var(--cream-section);
+            padding: 70px 0 30px;
+            border-top: 1px solid var(--soft-border);
+        }
+        .footer-grid {
+            display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 40px; margin-bottom: 50px;
+        }
+        .footer h4 { font-family: var(--font-serif); font-size: 1.2rem; margin-bottom: 16px; color: var(--dark-text); }
+        .footer p, .footer a { color: var(--secondary-text); font-size: 0.95rem; line-height: 2; }
+        .footer a:hover { color: var(--gold-accent); }
+        .footer-socials { display: flex; gap: 16px; margin-top: 12px; }
+        .footer-socials a { font-size: 1.3rem; color: var(--secondary-text); transition: var(--transition); }
+        .footer-socials a:hover { color: var(--gold-accent); }
+        .footer-bottom { text-align: center; padding-top: 30px; border-top: 1px solid var(--soft-border); color: var(--secondary-text); font-size: 0.9rem; }
+        .footer .logo { font-size: 1.8rem; margin-bottom: 10px; }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1200px) {
+            .menu-grid { grid-template-columns: repeat(3, 1fr); gap: 24px; }
+        }
+        @media (max-width: 992px) {
+            .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 22px; }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
+        }
+        @media (max-width: 768px) {
+            .navbar { padding: 12px 20px; }
+            .nav-links {
+                position: fixed; top: 0; right: -100%; width: 70%; max-width: 300px; height: 100vh;
+                background: var(--white); flex-direction: column; justify-content: center; align-items: center;
+                gap: 24px; transition: var(--transition); padding: 40px 20px; box-shadow: -10px 0 40px rgba(0,0,0,0.1);
+            }
+            .nav-links.open { right: 0; }
+            .hamburger { display: flex; z-index: 1001; }
+            .menu-grid { grid-template-columns: repeat(2, 1fr); gap: 18px; }
+            .menu-card .card-img { height: 160px; }
+            .footer-grid { grid-template-columns: 1fr; gap: 30px; }
+        }
+        @media (max-width: 550px) {
+            .menu-grid { grid-template-columns: 1fr 1fr; gap: 14px; }
+            .menu-card .card-img { height: 140px; }
+            .menu-card .card-body { padding: 12px 14px 16px; }
+            .menu-card .card-body .item-name { font-size: 1rem; }
+            .menu-card .card-body .item-price { font-size: 1rem; }
+            .menu-card .card-body .item-desc { font-size: 0.75rem; }
+        }
+        @media (max-width: 400px) {
+            .container { padding: 0 12px; }
+            .menu-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+            .menu-card .card-img { height: 120px; }
+            .menu-card .card-body { padding: 10px 10px 14px; }
+            .menu-card .card-body .item-name { font-size: 0.9rem; }
+            .menu-card .card-body .item-price { font-size: 0.9rem; }
+            .menu-card .card-body .item-desc { display: none; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            * { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+        }
+
+        /* ===== BACK TO TOP ===== */
+        .back-top {
+            position: fixed; bottom: 30px; right: 30px; background: var(--gold-accent); color: var(--white);
+            width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 1.2rem; box-shadow: 0 6px 20px rgba(0,0,0,0.1); opacity: 0; visibility: hidden;
+            transition: var(--transition); z-index: 999; border: none; cursor: pointer;
+        }
+        .back-top.visible { opacity: 1; visibility: visible; }
+        .back-top:hover { background: #a0753a; transform: translateY(-4px); }
+
+        /* ===== REVEAL ANIMATION ===== */
+        .menu-card {
+            opacity: 0;
+            transform: translateY(24px);
+            transition: opacity 0.7s ease, transform 0.7s ease, background 0.3s ease, box-shadow 0.3s ease;
+        }
+        .menu-card.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== NAVBAR ===== -->
+    <header>
+        <nav class="navbar" id="navbar">
+            <div class="logo">EMBER <span>&</span> SPICE</div>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html" class="active">Menu</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+                <li><a href="contact.html" class="nav-cta">Reserve a Table</a></li>
+            </ul>
+            <button class="hamburger" id="hamburger" aria-label="Toggle menu">
+                <span></span><span></span><span></span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- ===== HERO ===== -->
+    <section class="menu-hero">
+        <h1>Our Menu</h1>
+        <p>Comfort food, bold flavors, and something for every craving.</p>
+    </section>
+
+    <!-- ===== CATEGORY 1: Noodles & Asian ===== -->
+    <section class="menu-category">
+        <div class="container">
+            <h2 class="cat-heading"><i class="fas fa-utensils"></i> Noodles &amp; Asian</h2>
+            <div class="menu-grid">
+                <div class="menu-card"><img class="card-img" src="menu1.png" alt="Veg Chowmein"><div class="card-body"><span class="item-name">Veg Chowmein</span><span class="item-desc">Classic stir-fried noodles with fresh vegetables</span><span class="item-price">$12</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu2.png" alt="Chicken Chowmein"><div class="card-body"><span class="item-name">Chicken Chowmein</span><span class="item-desc">Tender chicken with wok-tossed noodles</span><span class="item-price">$14</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu3.png" alt="Schezwan Chowmein"><div class="card-body"><span class="item-name">Schezwan Chowmein</span><span class="item-desc">Spicy Schezwan style with a fiery kick</span><span class="item-price">$13</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu4.png" alt="Hakka Noodles"><div class="card-body"><span class="item-name">Hakka Noodles</span><span class="item-desc">Classic Hakka-style noodles with vegetables</span><span class="item-price">$13</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu5.png" alt="Chilli Garlic Noodles"><div class="card-body"><span class="item-name">Chilli Garlic Noodles</span><span class="item-desc">Bold chilli and garlic tossed noodles</span><span class="item-price">$13</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATEGORY 2: Momos ===== -->
+    <section class="menu-category">
+        <div class="container">
+            <h2 class="cat-heading"><i class="fas fa-dumbbell"></i> Momos</h2>
+            <div class="menu-grid">
+                <div class="menu-card"><img class="card-img" src="menu6.png" alt="Steamed Veg Momos"><div class="card-body"><span class="item-name">Steamed Veg Momos</span><span class="item-desc">Light and fluffy steamed veg dumplings</span><span class="item-price">$10</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu7.png" alt="Steamed Chicken Momos"><div class="card-body"><span class="item-name">Steamed Chicken Momos</span><span class="item-desc">Juicy chicken dumplings steamed to perfection</span><span class="item-price">$12</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu8.png" alt="Fried Momos"><div class="card-body"><span class="item-name">Fried Momos</span><span class="item-desc">Crispy fried dumplings with a crunchy exterior</span><span class="item-price">$12</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu9.png" alt="Schezwan Momos"><div class="card-body"><span class="item-name">Schezwan Momos</span><span class="item-desc">Tossed in spicy Schezwan sauce</span><span class="item-price">$13</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu10.png" alt="Tandoori Momos"><div class="card-body"><span class="item-name">Tandoori Momos</span><span class="item-desc">Charcoal-grilled with tandoori spices</span><span class="item-price">$14</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATEGORY 3: Finger Food & Starters ===== -->
+    <section class="menu-category">
+        <div class="container">
+            <h2 class="cat-heading"><i class="fas fa-hand-peace"></i> Finger Food &amp; Starters</h2>
+            <div class="menu-grid">
+                <div class="menu-card"><img class="card-img" src="menu11.png" alt="Crispy Chicken Strips"><div class="card-body"><span class="item-name">Crispy Chicken Strips</span><span class="item-desc">Golden fried chicken strips with dipping sauce</span><span class="item-price">$14</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu12.png" alt="Chicken Wings"><div class="card-body"><span class="item-name">Chicken Wings</span><span class="item-desc">Spicy or BBQ — your choice of glaze</span><span class="item-price">$15</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu13.png" alt="Loaded French Fries"><div class="card-body"><span class="item-name">Loaded French Fries</span><span class="item-desc">Topped with cheese, bacon and herbs</span><span class="item-price">$10</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu14.png" alt="Chilli Paneer"><div class="card-body"><span class="item-name">Chilli Paneer</span><span class="item-desc">Indian cottage cheese tossed in chilli sauce</span><span class="item-price">$13</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu15.png" alt="Crispy Corn"><div class="card-body"><span class="item-name">Crispy Corn</span><span class="item-desc">Crunchy golden corn with spices</span><span class="item-price">$9</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATEGORY 4: Pasta ===== -->
+    <section class="menu-category">
+        <div class="container">
+            <h2 class="cat-heading"><i class="fas fa-utensil-spoon"></i> Pasta</h2>
+            <div class="menu-grid">
+                <div class="menu-card"><img class="card-img" src="menu16.png" alt="Creamy Alfredo Pasta"><div class="card-body"><span class="item-name">Creamy Alfredo Pasta</span><span class="item-desc">Rich and creamy Alfredo sauce with parmesan</span><span class="item-price">$15</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu17.png" alt="Arrabbiata Pasta"><div class="card-body"><span class="item-name">Arrabbiata Pasta</span><span class="item-desc">Spicy tomato and garlic Arrabbiata sauce</span><span class="item-price">$14</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu18.png" alt="Chicken Penne Pasta"><div class="card-body"><span class="item-name">Chicken Penne Pasta</span><span class="item-desc">Penne with grilled chicken and tomato cream</span><span class="item-price">$16</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu19.png" alt="Pesto Pasta"><div class="card-body"><span class="item-name">Pesto Pasta</span><span class="item-desc">Fresh basil pesto with pine nuts and parmesan</span><span class="item-price">$15</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu20.png" alt="Spicy Garlic Pasta"><div class="card-body"><span class="item-name">Spicy Garlic Pasta</span><span class="item-desc">Garlic, chilli, and olive oil tossed pasta</span><span class="item-price">$14</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATEGORY 5: Pizza & Burgers ===== -->
+    <section class="menu-category">
+        <div class="container">
+            <h2 class="cat-heading"><i class="fas fa-pizza-slice"></i> Pizza &amp; Burgers</h2>
+            <div class="menu-grid">
+                <div class="menu-card"><img class="card-img" src="menu21.png" alt="Margherita Pizza"><div class="card-body"><span class="item-name">Margherita Pizza</span><span class="item-desc">Classic tomato, mozzarella and basil</span><span class="item-price">$14</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu22.png" alt="Pepperoni Pizza"><div class="card-body"><span class="item-name">Pepperoni Pizza</span><span class="item-desc">Loaded with pepperoni and melted cheese</span><span class="item-price">$17</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu23.png" alt="BBQ Chicken Pizza"><div class="card-body"><span class="item-name">BBQ Chicken Pizza</span><span class="item-desc">Smoky BBQ chicken with red onions</span><span class="item-price">$18</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu24.png" alt="Classic Chicken Burger"><div class="card-body"><span class="item-name">Classic Chicken Burger</span><span class="item-desc">Grilled chicken fillet with lettuce and mayo</span><span class="item-price">$15</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu25.png" alt="Crispy Veg Burger"><div class="card-body"><span class="item-name">Crispy Veg Burger</span><span class="item-desc">Crunchy veg patty with fresh toppings</span><span class="item-price">$13</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== CATEGORY 6: Desserts & Drinks ===== -->
+    <section class="menu-category">
+        <div class="container">
+            <h2 class="cat-heading"><i class="fas fa-glass-cheers"></i> Desserts &amp; Drinks</h2>
+            <div class="menu-grid">
+                <div class="menu-card"><img class="card-img" src="menu26.png" alt="Chocolate Brownie"><div class="card-body"><span class="item-name">Chocolate Brownie</span><span class="item-desc">Fudgy brownie with a chocolate drizzle</span><span class="item-price">$9</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu27.png" alt="Chocolate Lava Cake"><div class="card-body"><span class="item-name">Chocolate Lava Cake</span><span class="item-desc">Molten chocolate center with vanilla ice cream</span><span class="item-price">$10</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu28.png" alt="Classic Cheesecake"><div class="card-body"><span class="item-name">Classic Cheesecake</span><span class="item-desc">Creamy New York style cheesecake</span><span class="item-price">$9</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu29.png" alt="Fresh Lemonade"><div class="card-body"><span class="item-name">Fresh Lemonade</span><span class="item-desc">Hand-squeezed lemonade with mint</span><span class="item-price">$6</span></div></div>
+                <div class="menu-card"><img class="card-img" src="menu30.png" alt="Chocolate Milkshake"><div class="card-body"><span class="item-name">Chocolate Milkshake</span><span class="item-desc">Thick and creamy chocolate shake</span><span class="item-price">$8</span></div></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div>
+                    <div class="logo">EMBER <span>&</span> SPICE</div>
+                    <p style="margin-top: 10px;">Where flavor meets fire – a modern restaurant experience crafted with passion and warmth.</p>
+                    <div class="footer-socials">
+                        <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#"><i class="fab fa-instagram"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-yelp"></i></a>
+                    </div>
+                </div>
+                <div>
+                    <h4>Quick Links</h4>
+                    <a href="index.html">Home</a><br>
+                    <a href="menu.html">Menu</a><br>
+                    <a href="about.html">About</a><br>
+                    <a href="gallery.html">Gallery</a><br>
+                    <a href="contact.html">Contact</a>
+                </div>
+                <div>
+                    <h4>Opening Hours</h4>
+                    <p>Mon – Thu: 11:00 AM – 10:00 PM</p>
+                    <p>Fri – Sat: 11:00 AM – 11:30 PM</p>
+                    <p>Sun: 12:00 PM – 9:00 PM</p>
+                </div>
+                <div>
+                    <h4>Contact</h4>
+                    <p><i class="fas fa-phone" style="width:20px;"></i> +1 (555) 246-8019</p>
+                    <p><i class="fas fa-envelope" style="width:20px;"></i> hello@emberandspice.com</p>
+                    <p><i class="fas fa-map-marker-alt" style="width:20px;"></i> 125 Maple Street, Downtown, New York, NY</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 Ember & Spice. All Rights Reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <button class="back-top" id="backTop"><i class="fas fa-arrow-up"></i></button>
+
+    <script>
+        // ===== NAVBAR =====
+        const navbar = document.getElementById('navbar');
+        window.addEventListener('scroll', () => navbar.classList.toggle('scrolled', window.scrollY > 60));
+        const hamburger = document.getElementById('hamburger');
+        const navLinks = document.getElementById('navLinks');
+        hamburger.addEventListener('click', () => {
+            hamburger.classList.toggle('open');
+            navLinks.classList.toggle('open');
+        });
+        document.querySelectorAll('.nav-links a').forEach(link => {
+            link.addEventListener('click', () => {
+                hamburger.classList.remove('open');
+                navLinks.classList.remove('open');
+            });
+        });
+        const backTop = document.getElementById('backTop');
+        window.addEventListener('scroll', () => backTop.classList.toggle('visible', window.scrollY > 500));
+        backTop.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
+
+        // ===== SCROLL REVEAL (Intersection Observer) =====
+        const cards = document.querySelectorAll('.menu-card');
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('revealed');
+                }
+            });
+        }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+        cards.forEach(card => observer.observe(card));
+    </script>
+</body>
+</html>
